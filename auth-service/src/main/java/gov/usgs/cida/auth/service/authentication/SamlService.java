@@ -98,11 +98,12 @@ public class SamlService {
 	private static final String JNDI_SAML_METADATA_URL_PARAM_NAME = "auth.saml.metadata.endpoint";
 	private static final String CIDA_AUTH_TEMPLATE_REPLACEMENT_STRING = "[cida_auth_token]";
 
-	private static final int DATA_TTL = 600000; //data only kept around for 10 minutes
+	private static final int DATA_TTL = 60000; //data only kept around for 1 minutes
 	private static final Cache<String, String> inProgressState = 
 			CacheBuilder.newBuilder().expireAfterWrite(DATA_TTL, TimeUnit.MILLISECONDS).build();
 	
 	private static final String EMAIL_ATT_NAME = "EmailAddress";
+	private static final String EMAIL_URL = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress";
 
 	private String url;
 
@@ -381,7 +382,7 @@ public class SamlService {
 		for(Assertion assertion : samlResponse.getAssertions()) {
 			for(AttributeStatement stmt : assertion.getAttributeStatements()) {
 				for(Attribute att : stmt.getAttributes()) {
-					if(att.getName().equals(EMAIL_ATT_NAME)) {
+					if(att.getName().equals(EMAIL_ATT_NAME) || att.getName().equals(EMAIL_URL))  {
 						return att.getAttributeValues().get(0).getDOM().getTextContent();
 					}
 				}
